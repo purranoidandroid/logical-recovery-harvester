@@ -1,25 +1,40 @@
 import os
 from datetime import datetime
+from TikTokApi import TikTokApi
 
 def main():
     print("=== Logical Recovery Harvester Started ===")
     now = datetime.utcnow()
     print(f"Current UTC time: {now}")
 
-    # Step 1: Load environment config
-    gpt_mode = os.getenv("GPT_MODE", "manual")
-    tiktok_api_key = os.getenv("TIKTOK_API_KEY", "none")
-    sheets_creds = os.getenv("GOOGLE_SHEETS_CREDENTIALS", "none")
+    session_id = os.getenv("TIKTOK_SESSION_ID")
+    if not session_id:
+        print("❌ TikTok session ID not found. Exiting.")
+        return
 
-    print(f"GPT mode: {gpt_mode}")
-    print(f"TikTok key present: {'yes' if tiktok_api_key != 'none' else 'no'}")
-    print(f"Google Sheets creds present: {'yes' if sheets_creds != 'none' else 'no'}")
+    try:
+        api = TikTokApi()
+        api.cookies.set_cookie("sessionid", session_id, domain=".tiktok.com")
 
-    # Placeholder: This is where future TikTok data fetching will go
-    print(">>> Fetching TikTok data... (not implemented yet)")
+        # Replace this with your TikTok username
+        username = "logicalrecovery"
 
-    # Placeholder: This is where you'd write to Google Sheets
-    print(">>> Writing to Google Sheet... (not implemented yet)")
+        print(f"Fetching videos for user: {username}")
+        user = api.user(username=username)
+        videos = user.videos(count=5)
+
+        print(f"Found {len(videos)} videos.")
+        for i, video in enumerate(videos):
+            print(f"--- Video {i+1} ---")
+            print(f"ID: {video.id}")
+            print(f"Views: {video.stats.view_count}")
+            print(f"Likes: {video.stats.digg_count}")
+            print(f"Comments: {video.stats.comment_count}")
+            print(f"Shares: {video.stats.share_count}")
+            print()
+
+    except Exception as e:
+        print(f"❌ Error while fetching TikTok data: {e}")
 
     print("=== Harvester Run Complete ===")
 
