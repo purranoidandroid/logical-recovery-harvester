@@ -16,11 +16,11 @@ def main():
         return
 
     # Step 1: Start the Apify Actor for TikTok Profile
-    print(f"Launching Apify TikTok scraper for @{logicalrecovery}...")
+    print(f"Launching Apify TikTok scraper for @{username}...")
 
     start_url = "https://api.apify.com/v2/actor-tasks/ankushdaveri~tiktok-user-scraper/run-sync-get-dataset-items?token={}".format(apify_token)
     payload = {
-        "usernames": [logicalrecovery],
+        "usernames": [username],
         "resultsPerPage": 5,
         "scrollLimit": 1,
         "searchType": "user",
@@ -33,7 +33,7 @@ def main():
         response = requests.post(start_url, json=payload)
         data = response.json()
 
-        print(f"✅ Retrieved {len(data)} posts from @{logicalrecovery}\n")
+        print(f"✅ Retrieved {len(data)} posts from @{username}\n")
         for i, video in enumerate(data):
             print(f"--- Video {i+1} ---")
             print(f"ID: {video.get('id')}")
