@@ -8,9 +8,11 @@ def run_tiktok_scraper():
     url = "https://api.apify.com/v2/actor-tasks/clockworks~tiktok-profile-scraper/run-sync-get-dataset-items?token=" + APIFY_TOKEN
 
     payload = {
-        "username": "logicalrecovery",
-        "resultsLimit": 5
+        "profiles": ["logicalrecovery"],
+        "resultsPerPage": 5,
+        "shouldDownloadVideos": False
     }
+
 
     # Use Apify's actor for TikTok profiles
     response = requests.post(
