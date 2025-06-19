@@ -35,13 +35,17 @@ def main():
 
         print(f"✅ Retrieved {len(data)} posts from @{username}\n")
         for i, video in enumerate(data):
-            print(f"--- Video {i+1} ---")
-            print(f"ID: {video.get('id')}")
-            print(f"Views: {video.get('playCount')}")
-            print(f"Likes: {video.get('diggCount')}")
-            print(f"Comments: {video.get('commentCount')}")
-            print(f"Shares: {video.get('shareCount')}")
-            print()
+    if isinstance(video, dict):
+        print(f"--- Video {i+1} ---")
+        print(f"ID: {video.get('id')}")
+        print(f"Views: {video.get('playCount')}")
+        print(f"Likes: {video.get('diggCount')}")
+        print(f"Comments: {video.get('commentCount')}")
+        print(f"Shares: {video.get('shareCount')}")
+        print()
+    else:
+        print(f"⚠️ Unexpected item at index {i}: {video}")
+
 
     except Exception as e:
         print(f"❌ Error fetching from Apify: {e}")
