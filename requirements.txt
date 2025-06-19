@@ -1,3 +1,4 @@
+TikTokApi==5.3.2
 python-dotenv
 google-api-python-client
 google-auth
