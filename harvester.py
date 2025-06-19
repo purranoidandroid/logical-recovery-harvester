@@ -19,8 +19,8 @@ def main():
         # Replace this with your TikTok username
         username = "logicalrecovery"
 
-        print(f"Fetching videos for user: {username}")
-        user = api.user(username=username)
+        print(f"Fetching videos for user: {logicalrecovery}")
+        user = api.user(logicalrecovery=logicalrecovery)
         videos = user.videos(count=5)
 
         print(f"Found {len(videos)} videos.")
