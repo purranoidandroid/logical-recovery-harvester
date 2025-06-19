@@ -1,42 +1,50 @@
 import os
+import requests
+import time
 from datetime import datetime
-from TikTokApi import TikTokApi
 
 def main():
     print("=== Logical Recovery Harvester Started ===")
     now = datetime.utcnow()
     print(f"Current UTC time: {now}")
 
-    session_id = os.getenv("TIKTOK_SESSION_ID")
-    username = "logicalrecovery"  # <-- Replace this
+    apify_token = os.getenv("APIFY_TOKEN")
+    username = "logicalrecovery"  # ← replace with your TikTok handle (no @)
 
-    if not session_id:
-        print("❌ TikTok session ID not found. Exiting.")
+    if not apify_token or not username:
+        print("❌ Missing APIFY_TOKEN or username. Exiting.")
         return
 
+    # Step 1: Start the Apify Actor for TikTok Profile
+    print(f"Launching Apify TikTok scraper for @{logicalrecovery}...")
+
+    start_url = "https://api.apify.com/v2/actor-tasks/ankushdaveri~tiktok-user-scraper/run-sync-get-dataset-items?token={}".format(apify_token)
+    payload = {
+        "usernames": [logicalrecovery],
+        "resultsPerPage": 5,
+        "scrollLimit": 1,
+        "searchType": "user",
+        "downloadVideos": False,
+        "shouldDownloadVideo": False,
+        "shouldDownloadCover": False
+    }
+
     try:
-        with TikTokApi(custom_verify_fp="verify_123", use_test_endpoints=True) as api:
-            api._get_cookies()
-            api._get_cookies().set("sessionid", session_id, domain=".tiktok.com")
+        response = requests.post(start_url, json=payload)
+        data = response.json()
 
-            print(f"Fetching user: {logicalrecovery}")
-            user = api.get_user(logicalrecovery=logicalrecovery)
-
-            print("Fetching videos...")
-            videos = api.user_posts(user_id=user["user_id"], count=5)
-
-            print(f"Found {len(videos)} videos.\n")
-            for i, video in enumerate(videos):
-                print(f"--- Video {i+1} ---")
-                print(f"ID: {video['id']}")
-                print(f"Views: {video['stats']['playCount']}")
-                print(f"Likes: {video['stats']['diggCount']}")
-                print(f"Comments: {video['stats']['commentCount']}")
-                print(f"Shares: {video['stats']['shareCount']}")
-                print()
+        print(f"✅ Retrieved {len(data)} posts from @{logicalrecovery}\n")
+        for i, video in enumerate(data):
+            print(f"--- Video {i+1} ---")
+            print(f"ID: {video.get('id')}")
+            print(f"Views: {video.get('playCount')}")
+            print(f"Likes: {video.get('diggCount')}")
+            print(f"Comments: {video.get('commentCount')}")
+            print(f"Shares: {video.get('shareCount')}")
+            print()
 
     except Exception as e:
-        print(f"❌ Error fetching videos: {e}")
+        print(f"❌ Error fetching from Apify: {e}")
 
     print("=== Harvester Run Complete ===")
 
